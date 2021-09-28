@@ -1,0 +1,2 @@
+# elabox-logs
+Elabox logging
