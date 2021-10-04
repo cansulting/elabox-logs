@@ -1,2 +1,2 @@
 # elabox-logs
-Elabox logging
+Elabox logging app
