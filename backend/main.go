@@ -1,8 +1,14 @@
 package main
 
-import "github.com/cansulting/elabox-system-tools/foundation/logger"
+import (
+	"github.com/cansulting/elabox-system-tools/foundation/app"
+)
 
 func main() {
-	logger.Init("asdfas")
-	print("Asdfsdf")
+	controller, err := app.NewControllerWithDebug(&Activity{}, nil, true)
+	if err != nil {
+		panic(err)
+	}
+	AppController = controller
+	app.RunApp(controller)
 }
