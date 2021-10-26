@@ -1,3 +1,15 @@
+// Copyright 2021 The Elabox Authors
+// This file is part of elabox-logs library.
+
+// elabox-logs library is under open source LGPL license.
+// If you simply compile or link an LGPL-licensed library with your own code,
+// you can release your application under any license you want, even a proprietary license.
+// But if you modify the library or copy parts of it into your code,
+// you’ll have to release your application under similar terms as the LGPL.
+// Please check license description @ https://www.gnu.org/licenses/lgpl-3.0.txt
+
+// Contains procedure that can easily load logs and apply filter to logs
+
 package main
 
 import (
@@ -26,6 +38,7 @@ var logPool = sync.Pool{
 	},
 }
 
+// use to retrieve log from current offset
 func RetrieveLogWithLimit(offset int64) []logger.Log {
 	output := logPool.Get().([]logger.Log)
 	total := 0
@@ -33,6 +46,7 @@ func RetrieveLogWithLimit(offset int64) []logger.Log {
 	LogReader.LoadLimit(offset, LIMIT,
 		// function callback when log was retrieved
 		func(l logger.Log) bool {
+			// apply filter
 			if filterLog(l) {
 				s := output[total]
 				CopyLog(s, l)
@@ -48,6 +62,7 @@ func RetrieveLogWithLimit(offset int64) []logger.Log {
 	return output
 }
 
+// reuse log slice
 func ClearLogs(logs []logger.Log) {
 	for i := 0; i < len(logs); i++ {
 		ResuseLog(logs[i])
@@ -55,6 +70,7 @@ func ClearLogs(logs []logger.Log) {
 	logPool.Put(logs)
 }
 
+// set the current filter for log
 func ApplyFilter(newFilter map[string]interface{}) {
 	if len(newFilter) == 0 {
 		filter = nil
@@ -86,10 +102,6 @@ func RetrieveLatestOffset() []logger.Log {
 	return RetrieveLogWithLimit(0)
 }
 
-func onClientRecievedLog(chunkI int, l logger.Log) {
-
-}
-
 // use to check if key is toggled/true in map
 func checkIfToggle(key string, _map map[string]interface{}, l logger.Log) bool {
 	if l[key] == nil {
@@ -99,7 +111,7 @@ func checkIfToggle(key string, _map map[string]interface{}, l logger.Log) bool {
 	return _map == nil || _map[key2] == nil || _map[key2].(bool)
 }
 
-// return true if all conditions are satisfied
+// return true if all conditions are satisfied from filter condition
 func checkConditions(l logger.Log) bool {
 	length := len(filterConditions)
 	for i := 0; i < length; i++ {
