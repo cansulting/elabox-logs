@@ -8,17 +8,13 @@
 // you’ll have to release your application under similar terms as the LGPL.
 // Please check license description @ https://www.gnu.org/licenses/lgpl-3.0.txt
 
-package main
+import React from 'react';
+import { screen } from '@testing-library/react';
+import { render } from './test-utils';
+import App from './App';
 
-import (
-	"github.com/cansulting/elabox-system-tools/foundation/app"
-)
-
-func main() {
-	controller, err := app.NewController(&Activity{}, nil) //app.NewControllerWithDebug(&Activity{}, nil, true)
-	if err != nil {
-		panic(err)
-	}
-	AppController = controller
-	app.RunApp(controller)
-}
+test('renders learn react link', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/learn chakra/i);
+  expect(linkElement).toBeInTheDocument();
+});

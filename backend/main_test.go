@@ -11,14 +11,29 @@
 package main
 
 import (
-	"github.com/cansulting/elabox-system-tools/foundation/app"
+	"encoding/json"
+	"testing"
 )
 
-func main() {
-	controller, err := app.NewController(&Activity{}, nil) //app.NewControllerWithDebug(&Activity{}, nil, true)
+// test log retrieval
+func TestRetrieveLogs(t *testing.T) {
+	res := RetrieveLatestOffset()
+	output, err := json.Marshal(res)
+	ClearLogs(res)
 	if err != nil {
-		panic(err)
+		t.Error(output)
+		return
 	}
-	AppController = controller
-	app.RunApp(controller)
+	t.Log(output)
+}
+
+// test filter retrieval
+func TestRetrieveFilter(t *testing.T) {
+	summary := LoadLogSummary()
+	json, err := json.Marshal(summary)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(json)
 }

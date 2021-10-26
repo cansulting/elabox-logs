@@ -8,17 +8,13 @@
 // you’ll have to release your application under similar terms as the LGPL.
 // Please check license description @ https://www.gnu.org/licenses/lgpl-3.0.txt
 
-package main
 
-import (
-	"github.com/cansulting/elabox-system-tools/foundation/app"
-)
+import { CODE_SUCCESS, LOAD_FILTERS_AC, LOAD_LATEST_AC, PKID } from "../constant";
 
-func main() {
-	controller, err := app.NewController(&Activity{}, nil) //app.NewControllerWithDebug(&Activity{}, nil, true)
-	if err != nil {
-		panic(err)
-	}
-	AppController = controller
-	app.RunApp(controller)
+export function retrieveLatest(eventH, filter = {}, callback = (logs) => {}) {
+    eventH.sendRPC(PKID, {id: LOAD_LATEST_AC, data: filter}, callback)
+}
+
+export function retrieveSummary(eventH, callback) {
+    eventH.sendRPC(PKID, {id: LOAD_FILTERS_AC}, callback)
 }

@@ -8,17 +8,7 @@
 // you’ll have to release your application under similar terms as the LGPL.
 // Please check license description @ https://www.gnu.org/licenses/lgpl-3.0.txt
 
-package main
-
-import (
-	"github.com/cansulting/elabox-system-tools/foundation/app"
-)
-
-func main() {
-	controller, err := app.NewController(&Activity{}, nil) //app.NewControllerWithDebug(&Activity{}, nil, true)
-	if err != nil {
-		panic(err)
-	}
-	AppController = controller
-	app.RunApp(controller)
-}
+export const PKID = "ela.logs"
+export const LOAD_FILTERS_AC = PKID + ".LOAD_FILTERS_ACTION"  // use to populate data for filters
+export const LOAD_LATEST_AC = PKID + ".LOAD_LATEST_ACTION"    // use to load latest log action
+export const CODE_SUCCESS = 200
