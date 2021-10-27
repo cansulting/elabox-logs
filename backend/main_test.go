@@ -17,14 +17,12 @@ import (
 
 // test log retrieval
 func TestRetrieveLogs(t *testing.T) {
-	res := RetrieveLatestOffset()
-	output, err := json.Marshal(res)
-	ClearLogs(res)
+	res, err := RetrieveFromOffset(0)
 	if err != nil {
-		t.Error(output)
+		t.Error(err)
 		return
 	}
-	t.Log(output)
+	t.Log(res)
 }
 
 // test filter retrieval

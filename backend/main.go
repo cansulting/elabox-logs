@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	controller, err := app.NewController(&Activity{}, nil) //app.NewControllerWithDebug(&Activity{}, nil, true)
+	controller, err := app.NewControllerWithDebug(&Activity{}, nil, true)
 	if err != nil {
 		panic(err)
 	}
