@@ -28,6 +28,7 @@ func (instance *Activity) OnStart(action *data.Action) error {
 	// recieved requests from client
 	AppController.RPC.OnRecieved(LOAD_FILTERS_AC, instance.OnAction_LoadFilters)
 	AppController.RPC.OnRecieved(LOAD_LATEST_AC, instance.OnAction_LoadLatest)
+	AppController.RPC.OnRecieved(LOAD_RANGE_AC, instance.OnAction_LoadRange)
 	return nil
 }
 
@@ -43,23 +44,52 @@ func (instance *Activity) OnAction_LoadFilters(client protocol.ClientInterface, 
 	summary := LoadLogSummary()
 	output, err := json.Marshal(summary)
 	if err != nil {
-		return err.Error()
+		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, err.Error(), false)
 	}
 	return rpc.CreateResponseQ(rpc.SUCCESS_CODE, string(output), false)
 }
 
 // callback from client. this load the latest logs
+// @optional map - contains filters and offset. Offset is the start of retrieval
 func (instance *Activity) OnAction_LoadLatest(client protocol.ClientInterface, data data.Action) string {
 	filters, err := data.DataToMap(nil)
 	if err != nil {
 		return err.Error()
 	}
 	ApplyFilter(filters)
-	res := RetrieveLatestOffset()
-	output, err := json.Marshal(res)
-	ClearLogs(res)
+	var offset int64 = 0
+	if filters["offset"] != nil {
+		val := filters["offset"].(float64)
+		offset = int64(val)
+	}
+	res, err := RetrieveFromOffset(offset)
+	if err != nil {
+		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, err.Error(), false)
+	}
+	return rpc.CreateResponseQ(rpc.SUCCESS_CODE, res, false)
+}
+
+// callback from client. this load the latest logs
+// @optional map - contains filters, offset and limit. Offset is the start of retrieval. limit is the end offset
+func (instance *Activity) OnAction_LoadRange(client protocol.ClientInterface, data data.Action) string {
+	filters, err := data.DataToMap(nil)
 	if err != nil {
 		return err.Error()
 	}
-	return rpc.CreateResponseQ(rpc.SUCCESS_CODE, string(output), false)
+	ApplyFilter(filters)
+	var offset int64 = 0
+	var length int64 = 0
+	if filters["offset"] != nil {
+		val := filters["offset"].(float64)
+		offset = int64(val)
+	}
+	if filters["limit"] != nil {
+		val := filters["limit"].(float64)
+		length = int64(val)
+	}
+	res, err := RetrieveFromRange(offset, length)
+	if err != nil {
+		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, err.Error(), false)
+	}
+	return rpc.CreateResponseQ(rpc.SUCCESS_CODE, res, false)
 }

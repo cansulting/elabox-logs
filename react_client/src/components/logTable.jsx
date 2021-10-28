@@ -14,6 +14,8 @@ import {
     This component displays the log in formatted display
 */
 
+const CHARLIMIT = 50
+
 function getColor(level) {
     switch (level) {
         case 'error':
@@ -28,8 +30,32 @@ function getColor(level) {
 }
 
 class LogTable extends React.Component {
+    lastScroll=0
+    getScrollPercent() {
+        const logsElem = document.getElementById("logs")
+        const h = logsElem.clientHeight
+        const scrollH = logsElem.scrollHeight - h
+        const percent = Math.abs( logsElem.scrollTop / scrollH)
+        return percent
+    }
+    onScroll() {
+        const { onLatest, onPrevious } = this.props
+        const percent = this.getScrollPercent()
+        //console.log(this.lastScroll - percent,percent)
+        if (percent <= 0.01) {
+            // check direction
+            if (this.lastScroll - percent > 0)
+                onLatest()
+        } else if (percent >= 0.99) {
+            if (this.lastScroll - percent < 0)
+                onPrevious()
+        }
+        this.lastScroll = percent
+        
+    }
     render() {
         const  { logs = [] } = this.props
+        
         return (
             <Box flex='1'>
                 <HStack fontWeight='semibold'>
@@ -39,16 +65,16 @@ class LogTable extends React.Component {
                     <Container w='container.xl'>Message</Container>
                     <Container w='container.sm'>Category</Container>
                 </HStack>
-                <Accordion allowToggle overflowY='auto' h='calc(100vh - 180px)' display='flex' flexDirection='column-reverse'>
+                <Accordion id="logs" allowToggle overflowY='auto' h='calc(100vh - 240px)' display='flex' flexDirection='column-reverse' onScroll={this.onScroll.bind(this)}>
                     {
                         logs.map( (val, index) => (
-                            val.level && <AccordionItem>
+                            val.level && <AccordionItem key={"logv" + index}>
                                 <AccordionButton textColor={getColor(val.level)}>
                                     <AccordionIcon/>
                                     <Container w='container.xs'>{val.level}</Container>
                                     <Container w='container.sm'>{val.time}</Container>
                                     <Container w='container.sm'>{val.package}</Container>
-                                    <Container w='6xl'>{val.message.substr(0, 30)+'...'}</Container>
+                                    <Container w='6xl'>{val.message.substr(0, CHARLIMIT)+'...'}</Container>
                                     <Container w='container.sm'>{val.category}</Container>
                                 </AccordionButton>
                                 <AccordionPanel pb='4' textAlign='left'>

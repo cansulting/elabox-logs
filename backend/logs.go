@@ -13,6 +13,7 @@
 package main
 
 import (
+	"encoding/json"
 	"strings"
 	"sync"
 
@@ -26,6 +27,7 @@ var filterLevels map[string]interface{}
 var filterPackages map[string]interface{}
 var filterCategories map[string]interface{}
 var filterConditions []interface{}
+var output map[string]interface{} = make(map[string]interface{})
 
 // resuable pool of logs
 var logPool = sync.Pool{
@@ -38,12 +40,70 @@ var logPool = sync.Pool{
 	},
 }
 
-// use to retrieve log from current offset
-func RetrieveLogWithLimit(offset int64) []logger.Log {
+// retrieve the latest logs
+// @return the formatted json string with logs and size. Where size is number bytes of log returned
+func RetrieveFromOffset(offset int64) (string, error) {
+	logs, newOffset := retrieveLogWithLimit(offset)
+	if offset <= 0 {
+		offset = LogReader.EndingOffset
+	}
+	output["logs"] = logs
+	output["size"] = offset - newOffset
+	res, err := json.Marshal(output)
+	ClearLogs(logs)
+	if err != nil {
+		return "", err
+	}
+	return string(res), nil
+}
+
+// returns the formatted json string given the range
+func RetrieveFromRange(startOffset int64, length int64) (string, error) {
+	logs, newOffset := retrieveLogFromRange(startOffset, length)
+	if startOffset <= 0 {
+		startOffset = LogReader.EndingOffset
+	}
+	output["logs"] = logs
+	output["size"] = startOffset - newOffset
+	res, err := json.Marshal(output)
+	ClearLogs(logs)
+	if err != nil {
+		return "", err
+	}
+	return string(res), nil
+}
+
+// retrieve the log given the range
+func retrieveLogFromRange(startOffset int64, length int64) ([]logger.Log, int64) {
 	output := logPool.Get().([]logger.Log)
 	total := 0
 	// load logs
-	LogReader.LoadLimit(offset, LIMIT,
+	offset := LogReader.Load(startOffset, length,
+		func(i int, l logger.Log) bool {
+			// apply filter
+			if filterLog(l) {
+				s := output[total]
+				CopyLog(s, l)
+				total++
+				return true
+			}
+			return false
+		},
+	)
+	// clear the unused indexes
+	for i := LIMIT - 1; i >= total; i-- {
+		ResuseLog(output[i])
+	}
+	return output, offset
+}
+
+// use to retrieve log from current offset
+// @return logs and new offset
+func retrieveLogWithLimit(offset int64) ([]logger.Log, int64) {
+	output := logPool.Get().([]logger.Log)
+	total := 0
+	// load logs
+	_, newOffset := LogReader.LoadLimit(offset, LIMIT,
 		// function callback when log was retrieved
 		func(l logger.Log) bool {
 			// apply filter
@@ -59,7 +119,7 @@ func RetrieveLogWithLimit(offset int64) []logger.Log {
 	for i := LIMIT - 1; i >= total; i-- {
 		ResuseLog(output[i])
 	}
-	return output
+	return output, newOffset
 }
 
 // reuse log slice
@@ -95,11 +155,6 @@ func ApplyFilter(newFilter map[string]interface{}) {
 		filterConditions = filter["conditions"].([]interface{})
 	}
 	//filterLevels = filter["levels"].(map[string]interface{})
-}
-
-// retrieve the latest logs
-func RetrieveLatestOffset() []logger.Log {
-	return RetrieveLogWithLimit(0)
 }
 
 // use to check if key is toggled/true in map
