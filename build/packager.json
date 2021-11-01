@@ -1,0 +1,9 @@
+{
+    "cwd": "",
+    "config": "info.json",
+    "binDir": "",
+    "bin": "./ela.logs",
+    "www": "../react_client/build",
+    "packages": [],
+    "customInstaller": ""
+}

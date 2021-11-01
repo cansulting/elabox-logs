@@ -4,9 +4,12 @@
 	"packageId": "ela.logs",
 	"build": 1,
 	"version": "0.1.0",
+	"program": "ela.logs",
 	"permissions": [],
 	"exportService": false,
-	"activities": ["ela.action.APP_LAUNCH"],
+	"activities": [
+		"ela.action.APP_LAUNCH"
+	],
 	"actionListener": [],
 	"location": "system",
 	"nodejs": false,
