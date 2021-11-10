@@ -17,6 +17,7 @@ import {
   theme,
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
+
 import LogArea from './components/logarea'
 
 function App() {
