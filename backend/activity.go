@@ -43,11 +43,11 @@ func (instance *Activity) OnEnd() error {
 
 // callback from client. this delete the log file
 func (instance *Activity) OnAction_DeleteLogFile(client protocol.ClientInterface, data data.Action) string {
-	e := os.Remove("/var/log/elabox.log")
+	e := os.Remove(ELA_LOG_FILE_LOC)
     if e != nil {
 		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, e.Error(), false)
     }
-	_, err := os.Create("/var/log/elabox.log")
+	_, err := os.Create(ELA_LOG_FILE_LOC)
 	if err != nil {
 		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, e.Error(), false)
     }
