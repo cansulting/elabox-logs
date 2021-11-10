@@ -1,5 +1,2 @@
 src_react/node_modules/.*
-node_modules
-yarn.lock
-package.json
 react_client/yarn.lock
