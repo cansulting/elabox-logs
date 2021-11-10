@@ -10,6 +10,8 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/backend",
+            "buildFlags": "-tags=IDE",
+            "cwd":"${workspaceFolder}/build"
         }
     ]
 }
