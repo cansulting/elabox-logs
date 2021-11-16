@@ -9,7 +9,7 @@
 // Please check license description @ https://www.gnu.org/licenses/lgpl-3.0.txt
 
 
-import { CODE_SUCCESS, LOAD_FILTERS_AC, LOAD_LATEST_AC, DELETE_LOG_FILE_AC, PKID } from "../constant";
+import { LOAD_FILTERS_AC, LOAD_LATEST_AC, DELETE_LOG_FILE_AC, PKID } from "../constant";
 
 export function retrieveLatest(eventH, filter = {}, callback = (logs) => {}) {
     eventH.sendRPC(PKID, {id: LOAD_LATEST_AC, data: filter}, callback)

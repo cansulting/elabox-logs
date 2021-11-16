@@ -17,7 +17,6 @@ import { Box,
     TagLabel,
     TagCloseButton
 } from '@chakra-ui/react'
-import { CloseIcon } from '@chakra-ui/icons'
 import { useState } from 'react'
 
 const emptyFilter = {
