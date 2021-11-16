@@ -11,6 +11,7 @@
             "mode": "debug",
             "program": "${workspaceFolder}/backend",
             "buildFlags": "-tags=IDE",
+            "cwd":"${workspaceFolder}/build"
         }
     ]
 }
