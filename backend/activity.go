@@ -14,10 +14,12 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/cansulting/elabox-system-tools/foundation/app/rpc"
 	"github.com/cansulting/elabox-system-tools/foundation/event/data"
 	"github.com/cansulting/elabox-system-tools/foundation/event/protocol"
+	"github.com/cansulting/elabox-system-tools/foundation/logger"
 )
 
 type Activity struct {
@@ -29,6 +31,7 @@ func (instance *Activity) OnStart(action *data.Action) error {
 	AppController.RPC.OnRecieved(LOAD_FILTERS_AC, instance.OnAction_LoadFilters)
 	AppController.RPC.OnRecieved(LOAD_LATEST_AC, instance.OnAction_LoadLatest)
 	AppController.RPC.OnRecieved(LOAD_RANGE_AC, instance.OnAction_LoadRange)
+	AppController.RPC.OnRecieved(DELETE_LOG_FILE_AC, instance.OnAction_DeleteLogFile)
 	return nil
 }
 
@@ -37,6 +40,20 @@ func (instance *Activity) IsRunning() bool {
 }
 func (instance *Activity) OnEnd() error {
 	return nil
+}
+
+// callback from client. this delete the log file
+func (instance *Activity) OnAction_DeleteLogFile(client protocol.ClientInterface, data data.Action) string {
+	e := os.Remove(logger.LOG_FILE)
+	if e != nil {
+		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, e.Error(), false)
+	}
+	_, err := os.Create(logger.LOG_FILE)
+	if err != nil {
+		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, e.Error(), false)
+	}
+	return rpc.CreateResponseQ(rpc.SUCCESS_CODE, "success", false)
+
 }
 
 // callback from client. this load the filters

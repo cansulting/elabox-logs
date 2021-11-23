@@ -27,6 +27,7 @@ const PKID = "ela.logs"
 const LOAD_FILTERS_AC = PKID + ".LOAD_FILTERS_ACTION"
 const LOAD_LATEST_AC = PKID + ".LOAD_LATEST_ACTION"
 const LOAD_RANGE_AC = PKID + ".LOAD_RANGE_ACTION"
+const DELETE_LOG_FILE_AC = PKID + ".DELETE_LOG_FILE_ACTION"
 
 // copy the log map to destination
 func CopyLog(dst logger.Log, src logger.Log) {
