@@ -1,10 +1,11 @@
 import React from 'react'
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, Button, Spacer } from '@chakra-ui/react'
+import { DownloadIcon, DeleteIcon, RepeatIcon } from '@chakra-ui/icons'
 import LogView from './logTable'
 import Filter from './filterview'
 import {EboxEvent} from 'elabox-foundation'
 import  { CODE_SUCCESS } from '../constant'
-import { retrieveLatest, retrieveSummary } from '../actions'
+import { retrieveLatest, retrieveSummary, deleteLogFile } from '../actions'
 
 class LogArea extends React.Component {
     state = { 
@@ -76,6 +77,34 @@ class LogArea extends React.Component {
             this.setState({logs:logs.message.logs, offset: 0}) 
         })
     }
+
+
+    downloadLogsFile = () => {
+        console.log("Downloading logs... ")
+        let logsString = this.state.logs.map(item => 
+            Object.values(item).join(' ')).join('\n')
+        const element = document.createElement("a")
+        console.log(logsString)
+        const file = new Blob([logsString], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file)
+        element.download = 'ela-logs.txt'
+        document.body.appendChild(element);
+        element.click();
+    }
+
+
+    clearLogs = () => {
+        this.setState({logs:[]})
+        deleteLogFile(this.state.eventh)
+        this.initLogs()
+
+    }
+
+    refreshLogs = () => {
+        this.onRetrieveLatest();
+    }
+
+
     render() {
         const { loading, summary, logs } = this.state
         if (loading) {
@@ -86,9 +115,42 @@ class LogArea extends React.Component {
                 <Box minW='300px'h='100%' bg='gray.300'>
                     <Filter summary={summary} onChanged={this.onChangedFilter.bind(this)}/>
                 </Box>
+
                 <Flex flex='1' flexFlow='column' w='900px'>
                     {/* <Box h='calc(20vh)' ></Box> */}
-                    <Box flex='1' ><LogView logs={logs} 
+
+                <Flex>
+                
+                <Box p="4">
+                    <Button 
+                    colorCheme="teal" 
+                    variant="outline"
+                    onClick={this.refreshLogs}
+                    leftIcon={<RepeatIcon/>}
+                    >  </Button> </Box>
+                <Spacer />
+                <Box p="4">
+                    <Button 
+                    colorCheme="teal" 
+                    variant="outline"
+                    onClick={this.clearLogs}
+                    leftIcon={<DeleteIcon/>}
+                    > Clear </Button> </Box>
+                <Box p="4">
+                    <Button 
+                    colorCheme="teal" 
+                    variant="outline"
+                    onClick={this.downloadLogsFile}
+                    leftIcon={<DownloadIcon/>}
+                    > Download </Button>
+
+                    </Box>
+                    </Flex>
+                    <Box flex='1' >
+
+
+
+                        <LogView logs={logs} 
                         onLatest={this.onRetrieveLatest.bind(this)} 
                         onPrevious={this.onRetrievePrevious.bind(this)}/></Box>
                 </Flex>

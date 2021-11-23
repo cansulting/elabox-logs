@@ -8,9 +8,8 @@
             "name": "Launch Backend",
             "type": "go",
             "request": "launch",
-            "mode": "auto",
+            "mode": "debug",
             "program": "${workspaceFolder}/backend",
-            "buildFlags": "-tags=IDE",
             "cwd":"${workspaceFolder}/build"
         }
     ]
