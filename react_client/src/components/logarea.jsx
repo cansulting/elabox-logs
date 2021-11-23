@@ -77,8 +77,6 @@ class LogArea extends React.Component {
             this.setState({logs:logs.message.logs, offset: 0}) 
         })
     }
-
-
     downloadLogsFile = () => {
         console.log("Downloading logs... ")
         let logsString = this.state.logs.map(item => 
@@ -91,20 +89,15 @@ class LogArea extends React.Component {
         document.body.appendChild(element);
         element.click();
     }
-
-
     clearLogs = () => {
         this.setState({logs:[]})
         deleteLogFile(this.state.eventh)
         this.initLogs()
 
     }
-
     refreshLogs = () => {
         this.onRetrieveLatest();
     }
-
-
     render() {
         const { loading, summary, logs } = this.state
         if (loading) {
@@ -115,12 +108,10 @@ class LogArea extends React.Component {
                 <Box minW='300px'h='100%' bg='gray.300'>
                     <Filter summary={summary} onChanged={this.onChangedFilter.bind(this)}/>
                 </Box>
-
                 <Flex flex='1' flexFlow='column' w='900px'>
                     {/* <Box h='calc(20vh)' ></Box> */}
 
                 <Flex>
-                
                 <Box p="4">
                     <Button 
                     colorCheme="teal" 
@@ -131,28 +122,28 @@ class LogArea extends React.Component {
                 <Spacer />
                 <Box p="4">
                     <Button 
-                    colorCheme="teal" 
-                    variant="outline"
-                    onClick={this.clearLogs}
-                    leftIcon={<DeleteIcon/>}
-                    > Clear </Button> </Box>
+                        colorCheme="teal" 
+                        variant="outline"
+                        onClick={this.clearLogs}
+                        leftIcon={<DeleteIcon/>}> 
+                        Clear 
+                    </Button> 
+                </Box>
                 <Box p="4">
                     <Button 
-                    colorCheme="teal" 
-                    variant="outline"
-                    onClick={this.downloadLogsFile}
-                    leftIcon={<DownloadIcon/>}
-                    > Download </Button>
-
-                    </Box>
-                    </Flex>
+                        colorCheme="teal" 
+                        variant="outline"
+                        onClick={this.downloadLogsFile}
+                        leftIcon={<DownloadIcon/>}> 
+                        Download 
+                    </Button>
+                </Box>
+                </Flex>
                     <Box flex='1' >
-
-
-
                         <LogView logs={logs} 
                         onLatest={this.onRetrieveLatest.bind(this)} 
-                        onPrevious={this.onRetrievePrevious.bind(this)}/></Box>
+                        onPrevious={this.onRetrievePrevious.bind(this)}/>
+                    </Box>
                 </Flex>
             </Flex>
         )
