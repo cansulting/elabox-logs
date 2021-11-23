@@ -101,8 +101,7 @@ class LogArea extends React.Component {
     }
 
     refreshLogs = () => {
-        this.setState({logs:[]})
-        this.initLogs()
+        this.onRetrieveLatest();
     }
 
 
