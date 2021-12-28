@@ -79,6 +79,7 @@ func retrieveLogFromRange(startOffset int64, length int64) ([]logger.Log, int64)
 	total := 0
 	// load logs
 	offset := LogReader.Load(startOffset, length,
+		logger.LATEST_FIRST,
 		func(i int, l logger.Log) bool {
 			// apply filter
 			if filterLog(l) {
@@ -103,7 +104,8 @@ func retrieveLogWithLimit(offset int64) ([]logger.Log, int64) {
 	output := logPool.Get().([]logger.Log)
 	total := 0
 	// load logs
-	_, newOffset := LogReader.LoadLimit(offset, LIMIT,
+	_, newOffset := LogReader.LoadSeq(offset, LIMIT,
+		logger.LATEST_FIRST,
 		// function callback when log was retrieved
 		func(l logger.Log) bool {
 			// apply filter

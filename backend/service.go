@@ -8,17 +8,22 @@
 // you’ll have to release your application under similar terms as the LGPL.
 // Please check license description @ https://www.gnu.org/licenses/lgpl-3.0.txt
 
+// handles log service
+
 package main
 
-import (
-	"github.com/cansulting/elabox-system-tools/foundation/app"
-)
+type Service struct {
+}
 
-func main() {
-	controller, err := app.NewController(&Activity{}, &Service{})
-	if err != nil {
-		panic(err)
-	}
-	AppController = controller
-	app.RunApp(controller)
+func (ins *Service) IsRunning() bool {
+	return true
+}
+
+func (ins *Service) OnEnd() error {
+	return nil
+}
+
+func (ins *Service) OnStart() error {
+	go OnMaintenance()
+	return nil
 }
