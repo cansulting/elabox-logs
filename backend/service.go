@@ -12,6 +12,11 @@
 
 package main
 
+import (
+	"github.com/cansulting/elabox-system-tools/foundation/logger"
+	"github.com/robfig/cron"
+)
+
 type Service struct {
 }
 
@@ -24,6 +29,14 @@ func (ins *Service) OnEnd() error {
 }
 
 func (ins *Service) OnStart() error {
-	go OnMaintenance()
+	go OnMaintenance(-1)
+	c := cron.New()
+	c.AddFunc("@midnight", func() {
+		err := OnMaintenance(-1)
+		if err != nil {
+			logger.GetInstance().Error().Err(err).Msg("failed executing log maintenance")
+		}
+	})
+	c.Start()
 	return nil
 }

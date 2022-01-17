@@ -11,13 +11,22 @@ import (
 
 var tmpLogFile *os.File
 
-const maintenancefile = "tmplog"
+const maintenancefile = "/tmp/tmplog"
+
+// maintenance schedule in millisec. by default this is weekly
+var defaultSched int64 = 7 * 24 * 60 * 60 * 1000
 
 // call back when starting log maintenance
-func OnMaintenance() error {
-	//logger.GetInstance().Info().Msg("start log maintenance...")
+// @startRange in millisecods. only persist old logs within specific range.
+// if value <= 0 then only persist logs that are within a week. example value is
+// 2 * 24 * 60 * 60 * 1000 it means persist logs in last 2 days
+func OnMaintenance(startRange int64) error {
+	logger.GetInstance().Info().Msg("start log maintenance...")
 	ctime := time.Now().UTC()
-	var weeklyMil int64 = 7 * 24 * 60 * 60 * 1000
+	if startRange <= 0 {
+		startRange = defaultSched
+	}
+
 	var tmptime time.Time
 	var err error
 	dirty := false
@@ -27,7 +36,7 @@ func OnMaintenance() error {
 			return true
 		}
 		diff := ctime.UnixMilli() - tmptime.UnixMilli()
-		if diff < weeklyMil {
+		if diff < startRange {
 			// all logs are fine. then no need to maintain
 			if !dirty {
 				return false
@@ -40,9 +49,8 @@ func OnMaintenance() error {
 		dirty = true
 		return true
 	})
-	// remove the old log file
+	// remove old log file
 	if dirty {
-		println("Needs to clean logs")
 		if tmpLogFile != nil {
 			tmpLogFile.Close()
 			tmpLogFile = nil
@@ -52,12 +60,18 @@ func OnMaintenance() error {
 			if err := os.Rename(maintenancefile, logger.LOG_FILE); err != nil {
 				return err
 			}
+			logger.Reinit()
 		}
+		logger.GetInstance().Info().Msg("Log house keeping finalization...")
+	} else {
+		logger.GetInstance().Info().Msg("nothing to clean in log. maintenance skipped")
 	}
 	return nil
 }
 
+// write to tmp file
 func write(l logger.Log) error {
+	// step: create tmp log file if not yet created
 	if tmpLogFile == nil {
 		var err error
 		tmpLogFile, err = os.OpenFile(maintenancefile, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0777)
@@ -65,6 +79,7 @@ func write(l logger.Log) error {
 			return err
 		}
 	}
+	// step: deserialize
 	bytes, err := json.Marshal(l)
 	if err != nil {
 		return nil
