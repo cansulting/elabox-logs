@@ -36,7 +36,7 @@ func LoadLogSummary() Summary {
 	var pkg string
 	var cat interface{}
 	// iterate all logs
-	LogReader.Load(0, -1, func(i int, l logger.Log) bool {
+	LogReader.Load(0, -1, logger.LATEST_FIRST, func(i int, l logger.Log) bool {
 		mutex.Lock()
 		level = l["level"].(string)
 		pkg = l["package"].(string)

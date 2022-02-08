@@ -6,12 +6,13 @@
 	"version": "0.1.0",
 	"program": "ela.logs",
 	"permissions": [],
-	"exportService": false,
+	"exportService": true,
 	"activities": [
 		"ela.action.APP_LAUNCH"
 	],
 	"actionListener": [],
 	"location": "system",
 	"nodejs": false,
-	"packagerVersion": "0.1.0"
+	"packagerVersion": "0.1.0",
+	"ext": null
 }

@@ -8,17 +8,35 @@
 // you’ll have to release your application under similar terms as the LGPL.
 // Please check license description @ https://www.gnu.org/licenses/lgpl-3.0.txt
 
+// handles log service
+
 package main
 
 import (
-	"github.com/cansulting/elabox-system-tools/foundation/app"
+	"github.com/cansulting/elabox-system-tools/foundation/logger"
+	"github.com/robfig/cron"
 )
 
-func main() {
-	controller, err := app.NewController(&Activity{}, &Service{})
-	if err != nil {
-		panic(err)
-	}
-	AppController = controller
-	app.RunApp(controller)
+type Service struct {
+}
+
+func (ins *Service) IsRunning() bool {
+	return true
+}
+
+func (ins *Service) OnEnd() error {
+	return nil
+}
+
+func (ins *Service) OnStart() error {
+	go OnMaintenance(-1)
+	c := cron.New()
+	c.AddFunc("@midnight", func() {
+		err := OnMaintenance(-1)
+		if err != nil {
+			logger.GetInstance().Error().Err(err).Msg("failed executing log maintenance")
+		}
+	})
+	c.Start()
+	return nil
 }
