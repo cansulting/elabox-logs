@@ -1,4 +1,5 @@
 import React from 'react'
+import { formatDistanceToNow } from "date-fns"
 import {
     Box,
     Container,
@@ -55,7 +56,6 @@ class LogTable extends React.Component {
     }
     render() {
         const  { logs = [] } = this.props
-        
         return (
             <Box flex='1'>
                 <HStack fontWeight='semibold'>
@@ -72,7 +72,7 @@ class LogTable extends React.Component {
                                 <AccordionButton textColor={getColor(val.level)}>
                                     <AccordionIcon/>
                                     <Container w='container.xs'>{val.level}</Container>
-                                    <Container w='container.sm'>{val.time}</Container>
+                                    <Container w='container.sm'>{formatDistanceToNow(new Date(val.time),{addSuffix:true})}</Container>
                                     <Container w='container.sm'>{val.package}</Container>
                                     <Container w='6xl'>{val.message.substr(0, CHARLIMIT)+'...'}</Container>
                                     <Container w='container.sm'>{val.category}</Container>
