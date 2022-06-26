@@ -11,6 +11,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^10.4.9",
     "@testing-library/user-event": "^12.8.3",
+    "date-fns": "^2.28.0",
     "elabox-foundation": "^1.0.12",
     "framer-motion": "^4.1.17",
     "react": "^17.0.2",
@@ -21,8 +22,8 @@
     "ws": "^8.2.3"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
