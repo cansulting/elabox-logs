@@ -13,7 +13,6 @@
 package main
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/cansulting/elabox-system-tools/foundation/app/rpc"
@@ -26,12 +25,17 @@ type Activity struct {
 }
 
 // callback when activity started
-func (instance *Activity) OnStart(action *data.Action) error {
-	// recieved requests from client
+func (instance *Activity) OnStart() error {
 	AppController.RPC.OnRecieved(LOAD_FILTERS_AC, instance.OnAction_LoadFilters)
 	AppController.RPC.OnRecieved(LOAD_LATEST_AC, instance.OnAction_LoadLatest)
 	AppController.RPC.OnRecieved(LOAD_RANGE_AC, instance.OnAction_LoadRange)
 	AppController.RPC.OnRecieved(DELETE_LOG_FILE_AC, instance.OnAction_DeleteLogFile)
+	return nil
+}
+
+func (instance *Activity) OnPendingAction(action *data.Action) error {
+	// recieved requests from client
+
 	return nil
 }
 
@@ -58,18 +62,18 @@ func (instance *Activity) OnAction_DeleteLogFile(client protocol.ClientInterface
 
 // callback from client. this load the filters
 func (instance *Activity) OnAction_LoadFilters(client protocol.ClientInterface, data data.Action) string {
-	summary := LoadLogSummary()
-	output, err := json.Marshal(summary)
-	if err != nil {
-		return rpc.CreateResponseQ(rpc.SYSTEMERR_CODE, err.Error(), false)
-	}
-	return rpc.CreateResponseQ(rpc.SUCCESS_CODE, string(output), false)
+	go func() {
+		summary := LoadLogSummary()
+		//
+		BroadcastSummary(summary)
+	}()
+	return rpc.CreateSuccessResponse("")
 }
 
 // callback from client. this load the latest logs
 // @optional map - contains filters and offset. Offset is the start of retrieval
 func (instance *Activity) OnAction_LoadLatest(client protocol.ClientInterface, data data.Action) string {
-	filters, err := data.DataToMap(nil)
+	filters, err := data.DataToMap()
 	if err != nil {
 		return err.Error()
 	}
@@ -89,7 +93,7 @@ func (instance *Activity) OnAction_LoadLatest(client protocol.ClientInterface, d
 // callback from client. this load the latest logs
 // @optional map - contains filters, offset and limit. Offset is the start of retrieval. limit is the end offset
 func (instance *Activity) OnAction_LoadRange(client protocol.ClientInterface, data data.Action) string {
-	filters, err := data.DataToMap(nil)
+	filters, err := data.DataToMap()
 	if err != nil {
 		return err.Error()
 	}

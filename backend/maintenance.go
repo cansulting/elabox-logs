@@ -31,6 +31,10 @@ func OnMaintenance(startRange int64) error {
 	var err error
 	dirty := false
 	LogReader.LoadSeq(0, -1, logger.OLD_FIRST, func(l logger.Log) bool {
+		if l["time"] == nil {
+			println("invalid log")
+			return false
+		}
 		tmptime, err = time.Parse(time.RFC3339, l["time"].(string))
 		if err != nil {
 			return true
