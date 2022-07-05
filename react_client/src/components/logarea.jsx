@@ -4,7 +4,7 @@ import { DownloadIcon, DeleteIcon, RepeatIcon } from '@chakra-ui/icons'
 import LogView from './logTable'
 import Filter from './filterview'
 import {EboxEvent} from 'elabox-foundation'
-import  { CODE_SUCCESS } from '../constant'
+import  { CODE_SUCCESS, PKID, AC_SUMMARY } from '../constant'
 import { retrieveLatest, retrieveSummary, deleteLogFile } from '../actions'
 
 class LogArea extends React.Component {
@@ -24,13 +24,12 @@ class LogArea extends React.Component {
         this.setState({loading: true, eventh:eventH})
         eventH.waitUntilConnected() 
             .then(connected => {
-                retrieveSummary(eventH, summary => {
+                eventH.subscribe(PKID, res => console.log(res))
+                eventH.onAction(AC_SUMMARY, summary => {
                     console.log(summary)
-                    if (summary.code === CODE_SUCCESS)
-                        this.setState({summary:  summary.message, loading: false})
-                    else 
-                        this.onError(summary.message)
+                    this.setState({summary: summary.data, loading: false})
                 })
+                retrieveSummary(eventH)
                 this.onRetrieveLogs(0)
             }).catch(err => {
                 this.onError(err) 
