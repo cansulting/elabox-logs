@@ -12,13 +12,19 @@
 import { LOAD_FILTERS_AC, LOAD_LATEST_AC, DELETE_LOG_FILE_AC, PKID } from "../constant";
 
 export function retrieveLatest(eventH, filter = {}, callback = (logs) => {}) {
-    eventH.sendRPC(PKID, {id: LOAD_LATEST_AC, data: filter}, callback)
+    eventH.sendRPC(PKID, LOAD_LATEST_AC, '', filter)
+        .then( logs => callback(logs))
 }
 
 export function retrieveSummary(eventH, callback) {
-    eventH.sendRPC(PKID, {id: LOAD_FILTERS_AC}, callback)
+    eventH.sendRPC(PKID, LOAD_FILTERS_AC)
 }
 
 export function deleteLogFile(eventH, callback) {
-    eventH.sendRPC(PKID, {id: DELETE_LOG_FILE_AC}, callback)
+    eventH.sendRPC(PKID, DELETE_LOG_FILE_AC)
+        .then( res => {
+            if (callback !== null)
+                callback()
+        })
 }
+
