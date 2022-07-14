@@ -38,7 +38,10 @@ func LoadLogSummary() Summary {
 	// iterate all logs
 	LogReader.Load(0, -1, logger.LATEST_FIRST, func(i int, l logger.Log) bool {
 		mutex.Lock()
-		level = l["level"].(string)
+		level = "debug"
+		if l["level"] != nil {
+			level = l["level"].(string)
+		}
 		pkg = l["package"].(string)
 		cat = l["category"]
 		filter.Levels[level]++

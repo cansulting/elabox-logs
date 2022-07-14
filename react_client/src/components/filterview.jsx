@@ -63,8 +63,8 @@ const FilterGroup = ({label,children}) => {
             </AccordionButton>
             <AccordionPanel>
                 <Wrap spacing='10px'>
-                    {children.length > 0 && children}
-                    {!(children.length > 0) && <Tag variant='outline'>Empty</Tag>}
+                    {children && children.length > 0 }
+                    {(!children || children.length === 0) && <Tag variant='outline'>Empty</Tag>}
                 </Wrap>
             </AccordionPanel>
         </AccordionItem>
@@ -137,29 +137,30 @@ const filter = ({summary = {}, filter = emptyFilter, onChanged = (newVal) => {}}
     const onDataChanged = () => {
         onChanged(newData)
     }
+    console.log(summary)
     return (
         <Box>
             <Accordion allowToggle allowMultiple>
                 <FilterGroup label="Level">
-                    <ItemButton color='green' counter={summary.levels.info} onToggle={(toggle) => {
+                    <ItemButton color='green' counter={summary.levels?.info} onToggle={(toggle) => {
                             newData.levels["info"] = toggle; 
                             onDataChanged()    
                         }}>
                         Info
                     </ItemButton>
-                    <ItemButton counter={summary.levels.debug} onToggle={(toggle) => {
+                    <ItemButton counter={summary.levels?.debug} onToggle={(toggle) => {
                             newData.levels["debug"] = toggle; 
                             onDataChanged()    
                         }}>
                         Debug
                     </ItemButton>
-                    <ItemButton color='yellow' counter={summary.levels.warning}onToggle={(toggle) => {
+                    <ItemButton color='yellow' counter={summary.levels?.warning}onToggle={(toggle) => {
                             newData.levels["warning"] = toggle; 
                             onDataChanged()    
                         }}>
                         Warning
                     </ItemButton>
-                    <ItemButton color='red' counter={summary.levels.error} onToggle={(toggle) => {
+                    <ItemButton color='red' counter={summary.levels?.error} onToggle={(toggle) => {
                             newData.levels["error"] = toggle; 
                             onDataChanged()    
                         }}>
@@ -167,8 +168,8 @@ const filter = ({summary = {}, filter = emptyFilter, onChanged = (newVal) => {}}
                     </ItemButton>
                 </FilterGroup>
                 <FilterGroup label="Package">
-                    {
-                        Object.keys( summary.packages).map((key, index) => (
+                    { summary.packages &&
+                        Object.keys( summary.packages)?.map((key, index) => (
                             <ItemButton 
                                 counter={summary.packages[key]}
                                 key={key + index}
@@ -183,7 +184,7 @@ const filter = ({summary = {}, filter = emptyFilter, onChanged = (newVal) => {}}
                     }
                 </FilterGroup>
                 <FilterGroup label="Category">
-                    {
+                    { summary.categories &&
                         Object.keys(summary.categories).map((key, index) => (
                             <ItemButton 
                                 counter={summary.categories[key]}
