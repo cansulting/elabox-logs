@@ -50,7 +50,9 @@ class LogArea extends React.Component {
                     newLogs = [...this.state.logs, ...newLogs]
                 }
                 //console.log(newLogs)
-                this.setState({logs: newLogs, offset: this.state.offset + logs.message.size, loadingLogs: false})
+                if(logs.message.size > 0){
+                    this.setState({logs: newLogs, offset: logs.message.size, loadingLogs: false})
+                }
             }else {
                 this.onError(logs.message)
                 this.setState({loadingLogs: false})
