@@ -43,14 +43,14 @@ var logPool = sync.Pool{
 // retrieve the latest logs
 // @return the formatted json string with logs and size. Where size is number bytes of log returned
 func RetrieveFromOffset(offset int64) (string, error) {
-	logs, newOffset := retrieveLogWithLimit(offset)
+	logs, _ := retrieveLogWithLimit(offset)
 	if offset <= 0 {
 		offset = LogReader.EndingOffset
 	}
 	output["logs"] = logs
-	output["size"] = offset - newOffset
+	output["size"] = offset - logger.CHUNK_SIZE_PER_PAGE
 	res, err := json.Marshal(output)
-	ClearLogs(logs)
+	// ClearLogs(logs)
 	if err != nil {
 		return "", err
 	}
