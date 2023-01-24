@@ -42,7 +42,9 @@ func LoadLogSummary() Summary {
 		if l["level"] != nil {
 			level = l["level"].(string)
 		}
-		pkg = l["package"].(string)
+		if l["package"] != nil {
+			pkg = l["package"].(string)
+		}
 		cat = l["category"]
 		filter.Levels[level]++
 		filter.Packages[pkg]++

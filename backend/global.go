@@ -21,6 +21,8 @@ import (
 var LogReader, _ = logger.NewReader("")
 var AppController *app.Controller
 
+const CHUNK_SIZE_PER_PAGE = logger.CHUNK_SIZE / 10
+
 const PKID = "ela.logs"
 
 // actions

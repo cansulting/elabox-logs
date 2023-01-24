@@ -48,7 +48,7 @@ func RetrieveFromOffset(offset int64) (string, error) {
 		offset = LogReader.EndingOffset
 	}
 	output["logs"] = logs
-	output["size"] = offset - logger.CHUNK_SIZE_PER_PAGE
+	output["size"] = offset - CHUNK_SIZE_PER_PAGE
 	res, err := json.Marshal(output)
 	// ClearLogs(logs)
 	if err != nil {
