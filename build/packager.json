@@ -5,5 +5,8 @@
     "bin": "./ela.logs",
     "www": "../react_client/build",
     "packages": [],
-    "customInstaller": ""
+    "customInstaller": "",
+    "icons": {
+        "medium": "icon.png"
+    }
 }
